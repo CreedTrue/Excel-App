@@ -2,13 +2,11 @@ from tkinter import filedialog
 import tkinter as tk
 import openpyxl as xl
 from openpyxl.utils import get_column_letter
-#import scrub_func
 
 def get_file():
     filename =  filedialog.askopenfilename(initialdir = "/home/creedg/Desktop/",title = "Select file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
     file_entry.delete(0, tk.END)
     file_entry.insert(0,str(filename))
-    #orig = xl.load_workbook(filename)
 
 
 def save_filename():
@@ -17,8 +15,14 @@ def save_filename():
     new_entry.insert(0,new_filename)
 
 def scrub_file(orig,new_name):
+    progress_label = tk.Label(text='Stage of Scrub')
+    progress_label.grid(column=0,row=5)
 
-    #org = xl.load_workbook(orig)
+    progress_entry = tk.Entry()
+    progress_entry.grid(column=1,row=5)
+    progress_entry.insert(0, 'Starting Scrub!')
+
+    org = xl.load_workbook(orig)
     sheet = org['EA_CR_SI']
 
     # need to get Equipment Description, Sample Point,
@@ -36,14 +40,16 @@ def scrub_file(orig,new_name):
 
 
     #Create New workbook
-    print('Creating new workbook...')
+    progress_entry.delete(0, tk.END)
+    progress_entry.insert(0, 'Creating new workbook...')
     new_excel = xl.Workbook()
     #Create New sheet
     newsheet = new_excel.active
     newsheet.title = 'EA_CR_SI(scrubbed)'
 
 
-    print('Finding and scrubbing excel info...')
+    progress_entry.delete(0, tk.END)
+    progress_entry.insert(0, 'Finding and scrubbing excel info...')
     #equip = sheet['H']
     #sample_point = sheet['I']
     #collection_date = sheet['N']
@@ -61,8 +67,15 @@ def scrub_file(orig,new_name):
             newColumn+=1
 
     new_excel.save(new_name)
-    print('Finished!')
+    progress_entry.delete(0, tk.END)
+    progress_entry.insert(0, 'Finished!')
 
+def check_if_valid():
+    old_file = file_entry.get()
+    new_file = new_entry.get()
+    #print (old_file)
+    #print (new_file)
+    scrub_file(old_file,new_file)
 
 #create window
 root = tk.Tk()
@@ -98,6 +111,9 @@ file_button.grid(column=2,row=1)
 
 newfile_button = tk.Button(text='Save as..', command=save_filename)
 newfile_button.grid(column=2,row=2)
+
+scrub_button = tk.Button(text='SCRUB IT!', command=check_if_valid)
+scrub_button.grid(column=1,row=3)
 
 
 #direction_label = tk.Label(text='''Welcome to Excel Scrubber!
