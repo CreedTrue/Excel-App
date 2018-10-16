@@ -1,7 +1,7 @@
-Welcome to Excel Scrubber!
+Welcome to Excel Scrubber
 
 This is still in the early stages. I only recently got around to messing with it.
-
+I want to create an application to help scrub excel sheets for important info. This project is currently very specifically focused on a perticular job. I will be trying to make it more generally applicable to others as well.
 
 Instructions:
 
