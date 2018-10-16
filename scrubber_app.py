@@ -2,6 +2,15 @@ from tkinter import filedialog
 import tkinter as tk
 import openpyxl as xl
 from openpyxl.utils import get_column_letter
+import os
+
+def open_and_save():
+    new_excel.save(new_entry.get())
+    os.system('xdg-open "'+ new_entry.get()+'"')
+
+def saveIt():
+    new_excel.save(new_entry.get())
+
 
 def get_file():
     filename =  filedialog.askopenfilename(initialdir = "/home/creedg/Desktop/",title = "Select file",filetypes = (("excel files","*.xlsx"),("all files","*.*")))
@@ -14,7 +23,7 @@ def save_filename():
     new_entry.delete(0, tk.END)
     new_entry.insert(0,new_filename)
 
-def scrub_file(orig,new_name):
+def scrub_file(orig):
     progress_label = tk.Label(text='Stage of Scrub')
     progress_label.grid(column=0,row=5)
 
@@ -38,11 +47,6 @@ def scrub_file(orig,new_name):
             #print(row)
             new_ws[get_column_letter(new_col)+str(row)] = ws[get_column_letter(old_col)+str(row)].value
 
-
-    #Create New workbook
-    progress_entry.delete(0, tk.END)
-    progress_entry.insert(0, 'Creating new workbook...')
-    new_excel = xl.Workbook()
     #Create New sheet
     newsheet = new_excel.active
     newsheet.title = 'EA_CR_SI(scrubbed)'
@@ -50,14 +54,7 @@ def scrub_file(orig,new_name):
 
     progress_entry.delete(0, tk.END)
     progress_entry.insert(0, 'Finding and scrubbing excel info...')
-    #equip = sheet['H']
-    #sample_point = sheet['I']
-    #collection_date = sheet['N']
-    #comments = sheet['O']
-    #for x in range(1, sheet.max_column):
-        #print(x)
-        #print(sheet[get_column_letter(x)+str(1)].value, 'Column:', get_column_letter(x))
-        #    pass
+
     newColumn = 1
     for top in range(1, sheet.max_column):
         title = sheet[get_column_letter(top)+str(1)].value
@@ -66,23 +63,31 @@ def scrub_file(orig,new_name):
             getColumn(top, newColumn, sheet, newsheet)
             newColumn+=1
 
-    new_excel.save(new_name)
     progress_entry.delete(0, tk.END)
     progress_entry.insert(0, 'Finished!')
 
+    save_button = tk.Button(text='Save',command = saveIt)
+    save_button.grid(column=0, row=6)
+
+    open_save = tk.Button(text='Save and Open',command=open_and_save)
+    open_save.grid(column=1, row=6)
+
+
+
+
+
+
 def check_if_valid():
     old_file = file_entry.get()
-    new_file = new_entry.get()
     #print (old_file)
-    #print (new_file)
-    scrub_file(old_file,new_file)
+    scrub_file(old_file)
 
 #create window
 root = tk.Tk()
 
 #create window specs
 root.geometry('500x400')
-root.title('Excel Scrubber V 0.0.1')
+root.title('Excel Scrubber V 0.0.2')
 
 # old file label
 file_label = tk.Label(text='Original File')
@@ -115,9 +120,8 @@ newfile_button.grid(column=2,row=2)
 scrub_button = tk.Button(text='SCRUB IT!', command=check_if_valid)
 scrub_button.grid(column=1,row=3)
 
+#Create workbook so it's global
+new_excel = xl.Workbook()
 
-#direction_label = tk.Label(text='''Welcome to Excel Scrubber!
-#Please remember this is in the early stages. Instructions follow.''')
-#direction_label.grid(column=0,row=4)
 
 root.mainloop()
